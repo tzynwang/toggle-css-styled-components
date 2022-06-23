@@ -1,31 +1,95 @@
-import React, { memo } from 'react'
-import classNames from 'classnames'
+import React, { memo, useState } from 'react';
 
-import Styles from './index.module.css'
+import ButtonBase from '@mui/material/ButtonBase';
+import CssBaseline from '@mui/material/CssBaseline';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+import Grid from '@mui/material/Grid';
+import InputBase from '@mui/material/InputBase';
+import InputLabel from '@mui/material/InputLabel';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 
-function App(): React.ReactElement {
-  return (
-    <main className={classNames(Styles.main)}>
-      <div>
-        Hello world, this React APP is created by{' '}
-        <code className={classNames(Styles.mainCode)}>npx create-react-app with template --choffee</code>.
-      </div>
-      <div>
-        Author: Charlie (Tzu Yin) |{' '}
-        <a href="https://github.com/tzynwang" target="_blank" className={Styles.mainAnchor}>
-          GitHub
-        </a>{' '}
-        |{' '}
-        <a href="https://tzynwang.github.io/" target="_blank" className={Styles.mainAnchor}>
-          Blog
-        </a>{' '}
-        |{' '}
-        <a href="https://www.npmjs.com/~tzyn.wang" target="_blank" className={Styles.mainAnchor}>
-          npm Packages
-        </a>
-      </div>
-    </main>
-  )
+enum PARSE_OPTIONS {
+  CSS_TO_STYLED = 'CSS_TO_STYLED',
+  STYLED_TO_CSS = 'STYLED_TO_CSS',
 }
 
-export default memo(App)
+function App(): React.ReactElement {
+  /* States */
+  const [option, setOption] = useState<PARSE_OPTIONS | null>(null);
+
+  /* Functions */
+  const handleValueChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    value: string
+  ): void => {
+    const v = value as PARSE_OPTIONS;
+    setOption(v);
+  };
+
+  /* Main */
+  return (
+    <React.Fragment>
+      <CssBaseline />
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <FormControl fullWidth>
+            <FormLabel id="demo-radio-buttons-group-label">
+              Choose parser:
+            </FormLabel>
+            <RadioGroup
+              aria-labelledby="demo-radio-buttons-group-label"
+              value={option}
+              onChange={handleValueChange}
+              name="radio-buttons-group"
+              row
+            >
+              <FormControlLabel
+                value={PARSE_OPTIONS.CSS_TO_STYLED}
+                control={<Radio />}
+                label="CSS to Styled Component"
+              />
+              <FormControlLabel
+                value={PARSE_OPTIONS.STYLED_TO_CSS}
+                control={<Radio />}
+                label="Styled Component to CSS"
+              />
+            </RadioGroup>
+            <ButtonBase sx={{ backgroundColor: '#ccc' }}>Parse</ButtonBase>
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="raw">Input:</InputLabel>
+            <InputBase
+              id="raw"
+              rows={3}
+              sx={{ border: '1px solid #ccc' }}
+              autoFocus
+              fullWidth
+              multiline
+            />
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="output">Output:</InputLabel>
+            <InputBase
+              id="output"
+              rows={3}
+              sx={{ border: '1px solid #ccc' }}
+              fullWidth
+              multiline
+            />
+          </FormControl>
+        </Grid>
+      </Grid>
+    </React.Fragment>
+  );
+}
+
+export default memo(App);
