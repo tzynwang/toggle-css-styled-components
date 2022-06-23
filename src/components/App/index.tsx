@@ -64,14 +64,27 @@ function App(): React.ReactElement {
         <Grid item xs={12} md={6}>
           <FormControl fullWidth>
             <InputLabel htmlFor="raw">Input:</InputLabel>
-            <InputBase id="raw" sx={{ border: '1px solid #ccc' }} />
+            <InputBase
+              id="raw"
+              rows={3}
+              sx={{ border: '1px solid #ccc' }}
+              autoFocus
+              fullWidth
+              multiline
+            />
           </FormControl>
         </Grid>
 
         <Grid item xs={12} md={6}>
           <FormControl fullWidth>
             <InputLabel htmlFor="output">Output:</InputLabel>
-            <InputBase id="output" sx={{ border: '1px solid #ccc' }} />
+            <InputBase
+              id="output"
+              rows={3}
+              sx={{ border: '1px solid #ccc' }}
+              fullWidth
+              multiline
+            />
           </FormControl>
         </Grid>
       </Grid>
