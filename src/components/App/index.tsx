@@ -1,6 +1,5 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 
-import ButtonBase from '@mui/material/ButtonBase';
 import CssBaseline from '@mui/material/CssBaseline';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -19,6 +18,8 @@ enum PARSE_OPTIONS {
 function App(): React.ReactElement {
   /* States */
   const [option, setOption] = useState<PARSE_OPTIONS | null>(null);
+  const [raw, setRaw] = useState<string>('');
+  const [result, setResult] = useState<string[][]>([]);
 
   /* Functions */
   const handleValueChange = (
@@ -28,6 +29,38 @@ function App(): React.ReactElement {
     const v = value as PARSE_OPTIONS;
     setOption(v);
   };
+  const handleRawInput = (
+    event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ): void => {
+    setRaw(event.target.value);
+  };
+
+  /* Hooks */
+  useEffect(() => {
+    if (!raw.trim().length) return;
+
+    if (option === PARSE_OPTIONS.CSS_TO_STYLED) {
+      const first = raw.split(';');
+      const second = first
+        .map((item) => item.trim())
+        .filter((item) => item.length);
+      const finalArray = second.map((item) => {
+        const holder: string[] = [];
+        const [key, value] = item.split(':');
+        let formatKey = `  ${key}: `;
+        if (key.includes('-')) {
+          const [first, second] = key.split('-');
+          formatKey = `  ${first}${second
+            .charAt(0)
+            .toUpperCase()}${second.slice(1)}: `;
+        }
+        holder.push(formatKey);
+        holder.push(`'${value.trim().replace(';', '')}',`);
+        return holder;
+      });
+      setResult(finalArray);
+    }
+  }, [option, raw]);
 
   /* Main */
   return (
@@ -57,7 +90,9 @@ function App(): React.ReactElement {
                 label="Styled Component to CSS"
               />
             </RadioGroup>
-            <ButtonBase sx={{ backgroundColor: '#ccc' }}>Parse</ButtonBase>
+            {/* <ButtonBase onClick={handleParse} sx={{ backgroundColor: '#ccc' }}>
+              Parse
+            </ButtonBase> */}
           </FormControl>
         </Grid>
 
@@ -66,6 +101,7 @@ function App(): React.ReactElement {
             <InputLabel htmlFor="raw">Input:</InputLabel>
             <InputBase
               id="raw"
+              onChange={handleRawInput}
               rows={3}
               sx={{ border: '1px solid #ccc' }}
               autoFocus
@@ -76,16 +112,27 @@ function App(): React.ReactElement {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <FormControl fullWidth>
+          {/* <FormControl fullWidth>
             <InputLabel htmlFor="output">Output:</InputLabel>
             <InputBase
               id="output"
               rows={3}
               sx={{ border: '1px solid #ccc' }}
+              value={result}
               fullWidth
               multiline
             />
-          </FormControl>
+          </FormControl> */}
+          <div className="resultContainer" style={{ fontFamily: 'monospace' }}>
+            <span>{'{'}</span>
+            {result.map((r, index) => (
+              <div key={index}>
+                <span style={{ whiteSpace: 'pre-wrap' }}>{r[0]}</span>
+                {r[1]}
+              </div>
+            ))}
+            <span>{'}'}</span>
+          </div>
         </Grid>
       </Grid>
     </React.Fragment>
