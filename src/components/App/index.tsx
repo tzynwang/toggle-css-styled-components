@@ -60,6 +60,35 @@ function App(): React.ReactElement {
       });
       setResult(finalArray);
     }
+
+    if (option === PARSE_OPTIONS.STYLED_TO_CSS) {
+      const first = raw.split(',');
+      const second = first
+        .map((item) => item.trim())
+        .filter((item) => item.length);
+      const finalArray = second.map((item) => {
+        const holder: string[] = [];
+        const [key, value] = item.split(':');
+        let formatKey = `  ${key}: `;
+        let upperCaseIndex = -1;
+        key.split('').forEach((char, index) => {
+          if (char === char.toUpperCase()) {
+            upperCaseIndex = index;
+          }
+        });
+        if (upperCaseIndex > -1) {
+          formatKey = `  ${key.slice(0, upperCaseIndex)}-${key
+            .slice(upperCaseIndex, key.length)
+            .toLocaleLowerCase()}: `;
+        }
+        holder.push(formatKey);
+        holder.push(
+          `${value.trim().replaceAll(',', '').replaceAll(`'`, ``).replaceAll(`"`, ``)};`
+        );
+        return holder;
+      });
+      setResult(finalArray);
+    }
   }, [option, raw]);
 
   /* Main */
