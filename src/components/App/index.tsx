@@ -1,5 +1,5 @@
-import React, { memo, useState, useEffect } from 'react';
-
+import React, { memo, useState, useEffect, useRef } from 'react';
+import ButtonBase from '@mui/material/ButtonBase';
 import CssBaseline from '@mui/material/CssBaseline';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -20,6 +20,7 @@ function App(): React.ReactElement {
   const [option, setOption] = useState<PARSE_OPTIONS | null>(null);
   const [raw, setRaw] = useState<string>('');
   const [result, setResult] = useState<string[][]>([]);
+  const resultContainer = useRef<HTMLDivElement | null>(null);
 
   /* Functions */
   const handleValueChange = (
@@ -33,6 +34,15 @@ function App(): React.ReactElement {
     event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ): void => {
     setRaw(event.target.value);
+  };
+  const handleCopy = (): void => {
+    if (!resultContainer.current) return;
+    const range = document.createRange();
+    range.selectNode(resultContainer.current);
+    window.getSelection()?.removeAllRanges();
+    window.getSelection()?.addRange(range);
+    document.execCommand('copy');
+    window.getSelection()?.removeAllRanges();
   };
 
   /* Hooks */
@@ -83,7 +93,11 @@ function App(): React.ReactElement {
         }
         holder.push(formatKey);
         holder.push(
-          `${value.trim().replaceAll(',', '').replaceAll(`'`, ``).replaceAll(`"`, ``)};`
+          `${value
+            .trim()
+            .replaceAll(',', '')
+            .replaceAll(`'`, ``)
+            .replaceAll(`"`, ``)};`
         );
         return holder;
       });
@@ -119,9 +133,6 @@ function App(): React.ReactElement {
                 label="Styled Component to CSS"
               />
             </RadioGroup>
-            {/* <ButtonBase onClick={handleParse} sx={{ backgroundColor: '#ccc' }}>
-              Parse
-            </ButtonBase> */}
           </FormControl>
         </Grid>
 
@@ -152,7 +163,11 @@ function App(): React.ReactElement {
               multiline
             />
           </FormControl> */}
-          <div className="resultContainer" style={{ fontFamily: 'monospace' }}>
+          <div
+            className="resultContainer"
+            ref={resultContainer}
+            style={{ fontFamily: 'monospace' }}
+          >
             <span>{'{'}</span>
             {result.map((r, index) => (
               <div key={index}>
@@ -162,6 +177,15 @@ function App(): React.ReactElement {
             ))}
             <span>{'}'}</span>
           </div>
+        </Grid>
+
+        <Grid item xs={12}>
+          <ButtonBase
+            onClick={handleCopy}
+            sx={{ width: '100%', backgroundColor: '#ccc' }}
+          >
+            Copy result
+          </ButtonBase>
         </Grid>
       </Grid>
     </React.Fragment>
